@@ -21,7 +21,7 @@ inf-rule-types  Γ^op x Γ -> Set ?
 - Even for directed output types, you view them as sets, because model morphisms should preserve them on the nose, not laxly/pseudo.
 - Should we specify that these are function types with covariant domain (premises) & covariant codomain (conclusion)?
                 Σ(Argtype : Γ -> Set) . (∫_Γ Argtype -> Set)
-  What do Kaposi et al. do?
+  What do Kaposi et al. do? I think they have a separate argument, to prove that you have syntax models. So I think `Γ^op x Γ -> Set` is good enough here.
   
 small types     Γ -> Set (Paige says maybe Γ -> Cat, this is still Conduché)
-  (i.e. single judgements)
+  (i.e. single judgements; the things occurring as the domain of a ∏-type)
