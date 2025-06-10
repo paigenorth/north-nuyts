@@ -1,0 +1,130 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsthm}
+\pdfoutput=1
+\usepackage{libertine}
+\usepackage[libertine]{newtxmath}
+\usepackage{a4wide}
+
+%\usepackage{mathpartir}
+%\usepackage{natbib}
+%\usepackage{tipa}
+
+%\usepackage{geometry}
+%\newcommand{\todo}[1]{\textbf{\red{*}}\marginpar{\red{#1}}}
+%\renewcommand{\todoi}[1]{\par \textbf{\red{#1}} \par}
+
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{thmtools}
+%\usepackage{mathrsfs}
+%%\usepackage{mathabx}
+%\usepackage{latexsym}
+\usepackage[hidelinks,bookmarksnumbered,unicode]{hyperref}
+\usepackage{cleveref}
+\usepackage{xcolor}
+\usepackage{xypic}
+	\CompileMatrices
+%\usepackage{stmaryrd}
+%\usepackage{epstopdf}
+%\usepackage{array}
+%\usepackage[normalem]{ulem}
+
+\usepackage[english]{babel}
+%\usepackage[dutch]{babel}
+%\usepackage{tipa}
+
+\usepackage{gats-sogats-macros}
+
+%\newcommand{\todoi}[1]{\textbf{\textcolor{red}{#1 \qed}}\par\noindent}
+%\newcommand{\todo}[1]{\textbf{\textcolor{red}{\footnote{\textcolor{red}{#1}}}}}
+%\newcommand{\todoi}[1]{}
+%\newcommand{\todo}[1]{}
+
+\newcommand{\thetitle}{Introduction to First-\ and Second-Order \\ Generalized Algebraic Theories}
+\newcommand{\theversion}{0.1}
+\newcommand{\theauthors}{Andreas Nuyts\textsuperscript{1}, Paige North\textsuperscript{2} \\ \textsuperscript{1}\emph{DistriNet, KU Leuven, Belgium} \\ \textsuperscript{2}\emph{Utrecht University, the Netherlands}}
+\begin{document}
+	\addtolength{\voffset}{-.5in}
+
+\title{\thetitle \\ v\theversion}
+\date{\today}
+\author{\theauthors}
+\maketitle
+%\vspace*{-.5in}
+
+\begin{abstract}
+	\noindent%
+	This note intends to present a contemporary perspective on Cartmell's generalized algebraic theories (GATs), which are algebraic theories with dependent sorts and which correspond to signatures of quotient-inductive-inductive-types (QIITs); and on second-order GATs (SOGATs), which are dependently typed languages with variable binding.
+	
+	We assume familiarity with: basic category theory, categories with families, ordinary and multisorted algebraic theories, and type systems presented through inference rules (i.e.\ working with specific GAT instances).
+	\todoi{Say something about assumed prior knowledge?}
+\end{abstract}
+
+\tableofcontents
+
+\section{Generalized Algebraic Theories (GATs)}
+
+\subsection{Motivation}
+
+\subsubsection{Algebraic theories}
+An \textbf{algebraic theory} consists of a number of operations, each with an arity, and a number of equation laws governing these.
+Examples are monoid theory, group theory, ring theory, linear algebra over a fixed field (assuming we have a unary scalar multiplication operation for every scalar in the field), \ldots
+A model consists of a set (called the carrier of the model), and an interpretation of each of the operations on the carrier, such that the laws are respected.
+Prior to considering the equation laws, each of the operations can be considered in isolation from the others.
+Thus, there is no inherent order in the operations.
+Similarly, each of the equation laws can be considered in isolation, so these are not inherently ordered either.
+Of course, the equation laws do mention the operations, so typically all operations are listed first, followed by all equation laws.
+Not every equation law necessarily mentions every operation, so we could actually start listing equation laws before having completed the list of operations, but this is unnecessary and therefore uncommon.
+
+An algebraic theory $\atpresA$ gives rise to:
+\begin{itemize}
+	\item a category of models $\Modelcat(\atpresA)$,
+	\item a Lawvere category $\Lawcat(\atpresA)$, whose objects are arities (represented as natural numbers, finite sets, arbitrary sets) and whose morphisms $m \to n$ are $n$-tuples of expressions with $m$ variables,
+	\item a left adjoint $F_\atpresA : \Set \to \Modelcat(\atpresA)$ to the forgetful functor $U_\atpresA : \Modelcat(\atpresA) \to \Set$ which sends models of $\atpresA$ to their carrier. Thus, $F_\atpresA$ freely turns sets into models.
+\end{itemize}
+The composite $U_\atpresA F_\atpresA$ is then a monad $M_\atpresA$ whose Eilenberg-Moore category is $\Modelcat(\atpresA)$ and whose Kleisli category is $\Lawcat(\atpresA)\op$, if arities are represented as arbitrary sets.
+
+\subsubsection{Multisorted algebraic theories (MATs)}
+A \textbf{multisorted algebraic theory} (MAT) for a given, fixed set $S$ of constant sorts, is roughly the same thing except that operations now have input and output sorts.
+That is, every operation has a single output sorts, whereas its arity is now no longer a number of arguments but a list of argument sorts whose length is the number of arguments.
+Let us call such a list, a \textbf{sort context}.
+Expressions are of course required to be well-typed, and equation laws feature well-typed expressions.
+A model consists of a set interpreting each sort, and a function between those sets interpreting each operation, such that the equation laws are satisfied.
+The category $\Modelcat(\atpresA)$ is now monadic over $\Set^S$.
+The Lawvere category $\Lawcat(\atpresA)$ now has as objects, sort contexts, and as morphisms $\sigma : \Gamma \to \Delta$, well-typed simultaneous substitutions, i.e. $\sigma$ assigns to each variable in $\Delta$ a well-typed expression in context $\Gamma$.
+If we ask sort contexts to have finite length, then it is a full subcategory of the opposite of the Kleisli category of the monad $M_\atpresA$ on $\Set^S$.
+
+\subsubsection{Essentially algebraic theories (EATs)}
+An \textbf{essentially algebraic theory} (EAT) for a given, fixed set $S$ of constant sorts, differs from a MAT in that the arity of an operation may specify not only a list of typed variables, but also a list of equations that these must satisfy, in order for the operation to be applicable.
+Similarly, equation laws may specify equations that need to be satisfied before the equation law is required to hold.
+This has a number of consequences:
+\begin{itemize}
+	\item Both operations and equation laws now mention operations.
+	\item The mentioning of operations is only legal when their arguments satisfy the required equations, which may be provable only from certain equation laws. Thus, operations and equation laws can all arbitrarily depend on \emph{each other}.
+	\item The very concept of an \emph{arity}, now depends on both operations and equation laws.
+\end{itemize}
+In order to maintain order, operations and equation laws are given as a \emph{telescope}, i.e.\ they are given in a specific order, and each one can rely only on previously introduced ones.
+
+A model of an EAT with $n+1$ defining clauses is then a model of the EAT with the last clause removed, which moreover has an interpretation for the last clause (a thing that is meaningful to ask, only when the previous clauses already have an interpretation).
+The category of models $\Modelcat(\atpresA_{n+1})$ is now monadic over the category of models $\Modelcat(\atpresA_n)$ of the theory with the last clause removed.\todo{I'm pretty convinced of this, but is it known?}
+A model of the empty theory is just an indexed set.
+
+\subsubsection{Generalized algebraic theories (GATs)}
+One way to frame EATs is that they extend MATs with a single dependent sort: the equality sort, which can now be mentioned under all circumstances where any other sort could be mentioned.
+It is generally known that disposing over an equality type, leads to similar expressivity as general type dependency.
+This is what GATs bring us: to the features of EATs, they add the fact that sorts, too, can be dependent and can impose equations on their inputs.
+This means that sorts, too, can depend on operations and equation laws, which obviously also depend on sorts.
+So rather than fixing a set of sorts before we even begin to speak about what a MAT/EAT is, we make the sorts part of the GAT signature, and indeed part of the telescope in such a way that each sort, operation, and equation law only depends on what comes before.
+
+\todoi{Cite a bunch of stuff}
+
+\section*{Acknowledgements}
+
+\appendix
+\section{Version History}
+
+\bibliographystyle{alphaurl}
+\bibliography{keml-refs.bib}
+
+\end{document}

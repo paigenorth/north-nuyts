@@ -1,4 +1,4 @@
-## write a note about Kovács's
+## write a note about Kovács's PhD
 - check also WG6 Genoa talk
 
 ## examples of CGATs and EnrGATs

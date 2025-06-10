@@ -1,0 +1,345 @@
+\newcommand{\todoi}[1]{\textbf{\textcolor{red}{#1 \qed}}\par\noindent}
+\newcommand{\todo}[1]{\textbf{\textcolor{red}{\footnote{\textcolor{red}{#1}}}}}
+%\renewcommand{\todoi}[1]{}
+%\newcommand{\todo}[1]{}
+
+% latex
+
+\newcommand{\nn}{\nonumber}
+
+\makeatother
+\newcommand{\goodxymatrix}[1]{\xymatrix@L=.25pc@M=.5pc{#1}}
+\newcommand{\onelinexymatrix}[1]{\xymatrix@1@L=.25pc@M=.5pc{#1}}
+\makeatletter
+
+\newcommand{\citationhere}[1]{\cite{#1} \fullcite{#1}}
+
+% indexing
+
+\newcommand{\indexmain}[1]{\index{#1|textbf}}
+\newcommand{\indexsee}[2]{\index{#1|see {#2}}}
+\newcommand{\indexalso}[2]{\index{#1|seealso {#2}}}
+
+\newenvironment{symlist}{\begin{description}}{\end{description}}
+\newcommand{\symitem}[2]{\item[\normalfont{#1}] #2}
+
+% environments
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\crefname{definition}{definition}{definitions}
+\Crefname{definition}{Definition}{Definitions}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{axiom}[theorem]{Axiom}
+
+\newenvironment{framefig}{\begin{figure}[htbp] \begin{oframed}}{\end{oframed} \end{figure}}
+%\newcommand{\interruptframefig}{\end{figure} \begin{figure}[htbp] \ContinuedFloat}
+
+% delimiters
+
+\newcommand{\interp}[1]{\mathopen{}\left\llbracket #1 \right\rrbracket\mathclose{}}
+	\newcommand{\Interp}[1]{\interp{#1}}
+\newcommand{\angles}[1]{\mathopen{}\left\langle #1 \right\rangle\mathclose{}}
+\newcommand{\accol}[1]{\mathopen{}\left\{ #1 \right\}\mathclose{}}
+\newcommand{\paren}[1]{\mathopen{}\left( #1 \right)\mathclose{}}
+\newcommand{\pparen}[1]{{\llparenthesis #1 \rrparenthesis}}
+\newcommand{\set}[2]{\mathopen{}\left\{ #1 \,\middle|\, #2 \right\}\mathclose{}}
+\newcommand{\brac}[1]{\mathopen{}\left[ #1 \right]\mathclose{}}
+\newcommand{\ceil}[1]{\mathopen{}\left\lceil #1 \right\rceil\mathclose{}}
+
+% basic symbols and fonts
+
+\newcommand{\textand}{\,\text{and}\,}
+\newcommand{\textwhere}{\,\text{where}\,}
+
+\newcommand{\inv}{^{-1}}
+
+\newcommand{\vfi}{\varphi}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\Rho}{{\mathrm{P}}}
+
+\newcommand{\loch}{{\llcorner\hspace{-.4ex}\lrcorner}}
+\newcommand{\sez}{\vdash}
+\newcommand{\Sez}{\vDash}
+\newcommand{\cat}[1]{\mathcal{#1}}
+\newcommand{\name}[1]{\mathsf{#1}}
+\newcommand{\eset}{\varnothing}
+\newcommand{\textdef}[1]{\textbf{#1}}
+
+\newcommand{\sep}{\mathrel{|}}
+\newcommand{\qmark}{\mathrel{?}}
+	\newcommand{\sysclause}[2]{#1 \qmark #2}
+	\newcommand{\tysysclause}[3]{#1 \qmark #2, #3}
+	
+\newcommand{\atsort}{{*}}
+
+% blackboard
+
+\newcommand{\IB}{{\mathbb B}}
+\newcommand{\IX}{{\mathbb I}}
+\newcommand{\IN}{{\mathbb N}}
+\newcommand{\IP}{{\mathbb P}}
+\newcommand{\IU}{{\mathbb U}}
+
+% inference rules
+
+	% custom labels
+	\makeatletter
+	\newcommand{\customlabel}[2]{%
+	   \protected@write \@auxout {}{\string \newlabel {#1}{{#2}{\thepage}{#2}{#1}{}} }%
+	   \hypertarget{#1}{#2}%
+	}
+	\makeatother
+
+\newcommand{\inferencelabel}[1]{\customlabel{rule:#1}{\textsc{#1}}\indexmain{#1@\ref{rule:#1}}}
+\newcommand{\eqlabel}[1]{(\text{\inferencelabel{#1}})}
+
+\newcommand{\inferenceright}[3]{\dfrac{\begin{array}{l l}#1\end{array}\hfill}{\begin{array}{l l}#2\end{array}\hfill} #3}
+\newcommand{\inference}[3]{\inferenceright{#1}{#2}{\text{#3}}}
+\newcommand{\inferencel}[4]{\inferencedeadl{\inferencelabel{#1}}{#2}{#3}{\text{#4}}}
+\newcommand{\inferencedeadl}[4]{\inferenceright{\hspace{-1ex}\text{#1} \\ #2}{#3}{\text{#4}}}
+\newcommand{\infwhere}{\mathrm{where}\,\,}
+\newcommand{\infnowhere}{\phantom{\mathrm{where}}\,\,}
+\newcommand{\infnewline}{\\ \rule{0pt}{5ex}}
+
+% colors
+
+% set theory
+
+\newcommand{\grothuni}[1]{\name{G}_{#1}}
+
+% categories
+
+\newcommand{\Obj}{\mathrm{Obj}}
+\newcommand{\Hom}{{\mathrm{Hom}}}
+\newcommand{\id}{\mathrm{id}}
+	\newcommand{\idsub}{{\mathrm{id}}}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\op}{^{\name{op}}}
+\newcommand{\co}{^{\name{co}}}
+\newcommand{\coop}{^{\name{coop}}}
+\newcommand{\whisk}{\mathbin{\star}}
+
+\newcommand{\bind}{{\name{bind}}}
+\newcommand{\extend}{{\name{extend}}}
+
+\DeclareMathOperator*{\colim}{colim}
+
+\newcommand{\ary}[2]{{}^{#2}{#1}}
+
+\newcommand{\pointcat}{{\name{Point}}}
+\newcommand{\point}{{*}}
+
+\newcommand{\RGcat}{{\name{RG}}}
+\newcommand{\RGnode}{{\mathbb{N}}}
+\newcommand{\RGedge}{{\mathbb{I}}}
+\newcommand{\RGsrc}{{\mathbf{s}}}
+\newcommand{\RGtgt}{{\mathbf{t}}}
+\newcommand{\RGrfl}{{\mathbf{r}}}
+
+\newcommand{\simplexcat}{{\name{Simplex}}}
+\newcommand{\simplex}[1]{\brac{#1}}
+
+\newcommand{\cubecat}{{\name{Cube}}}
+	\newcommand{\affine}{\Box}
+\newcommand{\twistedcubecat}{{\name{TwCube}}}
+\newcommand{\cchmcat}{{\name{CCHM}}}
+
+\newcommand{\clockcat}{{\name{Clock}}}
+\newcommand{\clocksym}{{\text{\clock}}}
+
+\newcommand{\novar}{\oslash}
+
+\newcommand{\Set}{{\name{Set}}}
+\newcommand{\Cat}{{\name{Cat}}}
+\newcommand{\Psh}{{\name{Psh}}}
+\newcommand{\EMalg}{{\name{EM}}}
+\newcommand{\EMcoalg}{{\name{EM}}}
+
+\newcommand{\twisted}[1]{\name{Tw}(#1)}
+	\newcommand{\twistobj}[3]{(#1 \xrightarrow{#3} #2)}
+\newcommand{\arrowcat}[1]{#1^\uparrow}
+	\newcommand{\thearrow}{{\uparrow}}
+	\newcommand{\arobj}[3]{(#1 \xrightarrow{#3} #2)}
+
+\newcommand{\catA}{{\cat A}}
+\newcommand{\catC}{{\cat C}}
+\newcommand{\catD}{{\cat D}}
+\newcommand{\catG}{{\cat G}}
+\newcommand{\catI}{{\cat I}}
+\newcommand{\catJ}{{\cat J}}
+\newcommand{\catL}{{\cat L}}
+\newcommand{\catK}{{\cat K}}
+\newcommand{\catM}{{\cat M}}
+\newcommand{\catP}{{\cat P}}
+\newcommand{\catR}{{\cat R}}
+\newcommand{\catS}{{\cat S}}
+\newcommand{\catV}{{\cat V}}
+\newcommand{\catW}{{\cat W}}
+
+
+\newcommand{\EMcat}{{\name{EM}}}
+\newcommand{\Algcat}{{\name{Alg}}}
+\newcommand{\Modelcat}{{\name{Model}}}
+\newcommand{\HModelcat}{{\name{HModel}}}
+\newcommand{\Kleisli}{{\name{Kl}}}
+	\newcommand{\bindop}{\mathbin{\gg\hspace{-.5ex}=}}
+	\newcommand{\bindback}{\mathbin{=\hspace{-.5ex}\ll}}
+	\newcommand{\rijgop}{\mathbin{>\hspace{-.7ex}=\hspace{-.5ex}>}}
+	\newcommand{\rijgback}{\mathbin{<\hspace{-.7ex}=\hspace{-.5ex}<}}
+\newcommand{\Lawcat}{\name{Law}}
+\newcommand{\HLawcat}{\name{HLaw}}
+\newcommand{\Monadcat}{\name{Monad}}
+\newcommand{\CCC}{\name{CCC}}
+\newcommand{\CPC}{\name{CPC}}
+	\newcommand{\ord}{\mathrm{ord}}
+
+\newcommand{\atpres}[1]{{\mathfrak{#1}}}
+\newcommand{\atpresA}{{\atpres A}}
+\newcommand{\atpresB}{{\atpres B}}
+\newcommand{\atpresP}{{\atpres P}}
+\newcommand{\atpresQ}{{\atpres Q}}
+\newcommand{\matsort}[1]{\angles{#1}}
+\newcommand{\eatsort}[1]{\angles{#1}}
+\newcommand{\hoatsort}[1]{\angles{#1}}
+
+\newcommand{\xyulcorner}[1][dr]{\save*!/#1+1.2pc/#1:(1,-1)@^{|-}\restore}
+\newcommand{\xydrcorner}[1][dr]{\save*!/#1-1.2pc/#1:(-1,1)@^{|-}\restore}
+
+% algebraic theories
+
+\newcommand{\metavar}[1]{\mathbf{m}_{#1}}
+\newcommand{\dbvar}[1]{\mathbf{v}_{#1}}
+
+\newcommand{\isalgsort}[2]{#1 \Vdash #2 \sort}
+\newcommand{\isalgterm}[3]{#1 \Vdash #2 : #3}
+
+\newcommand{\sort}{\,\name{sort}}
+\newcommand{\jud}{\,\name{jud}}
+
+\newcommand{\Tysort}{{\mathrm{Ty}}}
+\newcommand{\Tmsort}{{\mathrm{Tm}}}
+\newcommand{\Ctxsort}{{\mathrm{Ctx}}}
+\newcommand{\Objsort}{{\mathrm{Obj}}}
+\newcommand{\Subsort}{{\mathrm{Sub}}}
+
+% type theory
+
+\newcommand{\atmode}[1]{\mathrel{@} {#1}}
+
+\newcommand{\openlock}{{\text{\faUnlock}}}
+\newcommand{\locksym}{{\text{\faLock}}}
+
+\newcommand{\ctx}{\,\name{ctx}}
+\newcommand{\type}{\,\name{type}}
+\newcommand{\dtype}{\,\name{dtype}}
+\newcommand{\fib}{\,\name{fib}}
+\newcommand{\prop}{\,\name{prop}}
+\newcommand{\telescope}{\,\name{telescope}}
+\newcommand{\colonoid}{::}
+
+\newcommand{\fst}{{\name{fst}}}
+\newcommand{\snd}{{\name{snd}}}
+\newcommand{\inl}{{\name{inl}}}
+\newcommand{\inr}{{\name{inr}}}
+\newcommand{\unlambda}{{\name{un}\lambda}}
+
+\newcommand{\swapsub}{{\name{swap}}}
+
+\newcommand{\barecase}[1]{\begin{array}{l c l}#1\end{array}}
+\newcommand{\accolcase}[1]{\accol{\barecase{#1}}}
+	\newcommand{\accolcaseinline}[1]{\accol{#1}}
+\newcommand{\caseexpr}[1]{\name{case}\,#1\,\name{of}}
+	\newcommand{\case}[2]{\caseexpr{#1}\accolcase{#2}}
+	\newcommand{\caseinline}[2]{\caseexpr{#1}\,\accol{#2}}
+	
+%\newcommand{\extension}[2]{#1 \text{\faPaperclip} \accol{#2}}
+\newcommand{\extension}[2]{#1 {\,\name{ext}} \accol{#2}}
+\newcommand{\extensioninline}[2]{#1 {\,\name{ext}} \{#2\}}
+	\newcommand{\cut}[1]{\name{cut}_{#1}}
+	\newcommand{\paste}{{\name{paste}}}
+
+\newcommand{\letin}[2]{\name{let}\,(#1 = #2)\,\name{in}\,}
+
+\newcommand{\Unit}{{\name{Unit}}}
+	\newcommand{\unit}{{\name{unit}}}
+\newcommand{\Empty}{{\name{Empty}}}
+\newcommand{\idtp}[3]{#2 \equiv_{#1} #3}
+	\newcommand{\refl}{{\name{refl}}}
+	\newcommand{\funext}{{\name{funext}}}
+\newcommand{\leqtp}[3]{#2 \leq_{#1} #3}
+\newcommand{\idprop}[3]{#2 \doteq_{#1} #3}
+\newcommand{\uni}[1]{\name{U}_{#1}}
+	\newcommand{\El}{{\name{El}}}
+	\newcommand{\tycode}[1]{\ulcorner #1 \urcorner}
+	\newcommand{\uniNFF}[1]{\uni{#1}^{\name{NFF}}}
+\newcommand{\Prop}{{\name{Prop}}}
+	\newcommand{\propclass}[1]{\paren{\in #1}}
+	\newcommand{\dpropclass}[1]{\newtype{(} \newtype{\in}\,#1\newtype{)}}
+	\newcommand{\Pf}[1]{\brac{#1}}
+		\newcommand{\trivial}{{\name{tt}}}
+\newcommand{\Bool}{{\name{Bool}}}
+	\newcommand{\true}{{\name{true}}}
+	\newcommand{\false}{{\name{false}}}
+	\newcommand{\boolif}{\name{if}}
+\newcommand{\Nat}{{\name{Nat}}}
+	\newcommand{\zero}{{\name{0}}}
+	\newcommand{\suc}{{\name{suc}}}
+\newcommand{\Writer}{{\name{Writer}}}
+\newcommand{\WriterT}{{\name{WriterT}}}
+\newcommand{\Maybe}{{\name{Maybe}}}
+	\newcommand{\nothing}{{\name{nothing}}}
+	\newcommand{\just}{{\name{just}}}
+	
+\newcommand{\List}{{\name{List}}}
+	\newcommand{\concat}{\mathbin{{+}{+}}}
+
+\newcommand{\ev}{{\name{ev}}}
+
+\newcommand{\ua}{{\name{ua}}}
+\newcommand{\dua}{{\name{dua}}}
+
+% models of type theory
+
+\newcommand{\Ctx}{{\mathrm{Ctx}}}
+\newcommand{\Sub}{{\mathrm{Sub}}}
+\newcommand{\Ty}{{\mathrm{Ty}}}
+\newcommand{\Tm}{{\mathrm{Tm}}}
+\newcommand{\Base}{{\mathbb{B}}}
+\newcommand{\STLC}{{\mathrm{STLC}}}
+\newcommand{\Typsh}{{\mathrm{Ty}}}
+\newcommand{\Tmpsh}{{\widetilde{\Typsh}}}
+\newcommand{\Awodey}{\tau}
+%\newcommand{\calT}{{\mathcal{T}}}
+
+% presheaves
+
+\newcommand{\yoneda}{{\mathbf{y}}}
+
+\newcommand{\DSub}[2]{#1 \Rightarrow #2}
+\newcommand{\Dsez}{\mathrel{\rhd}}
+\newcommand{\sub}[1]{\brac{#1}}
+\newcommand{\dsub}[1]{[ #1 \rangle}
+\newcommand{\psub}[1]{\langle #1 \rangle}
+
+\newcommand{\lpsh}[1]{{#1}_!}
+	\newcommand{\adjLF}[1]{\adjA_{#1}}
+	\newcommand{\dadjLF}[1]{\newtype{\adjA}_{\newtype{#1}}}
+\newcommand{\fpsh}[1]{{#1}^*}%{#1^\circ}
+	\newcommand{\adjFR}[1]{\adjB_{#1}}
+	\newcommand{\dadjFR}[1]{\newtype{\adjB}_{\newtype{#1}}}
+\newcommand{\rpsh}[1]{{#1}_*}
+
+\newcommand{\posetleq}[2]{{\upharpoonright}^{#2}_{#1}}
+
+% misc
+
+\newcommand{\yes}{\faCheck}
+\newcommand{\nope}{\faTimes}
