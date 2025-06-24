@@ -66,11 +66,15 @@
 \section{Generalized Algebraic Theories (GATs)}
 
 \subsection{Motivation}
+We briefly discuss increasingly complex notions of algebraic theories, in order to gradually explain the motivation, design, and complexity of GATs and their models.
+This discussion is somewhat informal and glosses over semi-technical aspects such as the distinction between numbers, finite sets, and arbitrary sets.
+We will get more formal when we treat GATs specifically.
 
 \subsubsection{Algebraic theories}
-An \textbf{algebraic theory} consists of a number of operations, each with an arity, and a number of equation laws governing these.
-Examples are monoid theory, group theory, ring theory, linear algebra over a fixed field (assuming we have a unary scalar multiplication operation for every scalar in the field), \ldots
-A model consists of a set (called the carrier of the model), and an interpretation of each of the operations on the carrier, such that the laws are respected.
+An \textbf{algebraic theory} consists of a number of operations, each with an arity (represented as a number, or perhaps as a finite set), and a number of equation laws governing these.
+Examples are monoid theory, group theory, ring theory, linear algebra over a fixed field (assuming we have a unary scalar multiplication operation for every scalar in the field), \ldots{}
+A \textbf{model} consists of a set (called the carrier of the model), and an interpretation of each of the operations on the carrier, such that the laws are respected.
+
 Prior to considering the equation laws, each of the operations can be considered in isolation from the others.
 Thus, there is no inherent order in the operations.
 Similarly, each of the equation laws can be considered in isolation, so these are not inherently ordered either.
@@ -83,31 +87,32 @@ An algebraic theory $\atpresA$ gives rise to:
 	\item a Lawvere category $\Lawcat(\atpresA)$, whose objects are arities (represented as natural numbers, finite sets, arbitrary sets) and whose morphisms $m \to n$ are $n$-tuples of expressions with $m$ variables,
 	\item a left adjoint $F_\atpresA : \Set \to \Modelcat(\atpresA)$ to the forgetful functor $U_\atpresA : \Modelcat(\atpresA) \to \Set$ which sends models of $\atpresA$ to their carrier. Thus, $F_\atpresA$ freely turns sets into models.
 \end{itemize}
-The composite $U_\atpresA F_\atpresA$ is then a monad $M_\atpresA$ whose Eilenberg-Moore category is $\Modelcat(\atpresA)$ and whose Kleisli category is $\Lawcat(\atpresA)\op$, if arities are represented as arbitrary sets.
+The composite $U_\atpresA F_\atpresA$ is then a monad $M_\atpresA$ whose Eilenberg-Moore category is $\Modelcat(\atpresA)$ and whose Kleisli category is $\Lawcat(\atpresA)\op$, if arities in the Lawvere category are represented as arbitrary sets.
 
 \subsubsection{Multisorted algebraic theories (MATs)}
-A \textbf{multisorted algebraic theory} (MAT) for a given, fixed set $S$ of constant sorts, is roughly the same thing except that operations now have input and output sorts.
-That is, every operation has a single output sorts, whereas its arity is now no longer a number of arguments but a list of argument sorts whose length is the number of arguments.
-Let us call such a list, a \textbf{sort context}.
+A \textbf{multisorted algebraic theory} (MAT) for a given, fixed set $S$ of (non-dependent) sorts, is roughly the same thing except that operations now have input and output sorts.
+That is, every operation has a single output sort, whereas its arity is now no longer a number of arguments but a list of argument sorts whose length is the number of arguments.
+Let us call such a list, a \textbf{sorting context}.\footnote{`Sorting' as in `typing': assigning a sort. Not as in quicksort.}
 Expressions are of course required to be well-typed, and equation laws feature well-typed expressions.
-A model consists of a set interpreting each sort, and a function between those sets interpreting each operation, such that the equation laws are satisfied.
+A \textbf{model} consists of a set interpreting each sort, and an interpretation of each of the operations as a multi-argument function between the appropriate sets, such that the equation laws are satisfied.
 The category $\Modelcat(\atpresA)$ is now monadic over $\Set^S$.
-The Lawvere category $\Lawcat(\atpresA)$ now has as objects, sort contexts, and as morphisms $\sigma : \Gamma \to \Delta$, well-typed simultaneous substitutions, i.e. $\sigma$ assigns to each variable in $\Delta$ a well-typed expression in context $\Gamma$.
-If we ask sort contexts to have finite length, then it is a full subcategory of the opposite of the Kleisli category of the monad $M_\atpresA$ on $\Set^S$.
+The Lawvere category $\Lawcat(\atpresA)$ now has as objects, sorting contexts, and as morphisms $\sigma : \Gamma \to \Delta$, well-typed simultaneous substitutions, i.e. $\sigma$ assigns to each variable in $\Delta$ a well-typed expression in context $\Gamma$.
+If we ask sorting contexts to have finite length, then it embeds fully faithfully into the opposite of the Kleisli category of the monad $M_\atpresA$ on $\Set^S$.
 
 \subsubsection{Essentially algebraic theories (EATs)}
 An \textbf{essentially algebraic theory} (EAT) for a given, fixed set $S$ of constant sorts, differs from a MAT in that the arity of an operation may specify not only a list of typed variables, but also a list of equations that these must satisfy, in order for the operation to be applicable.
-Similarly, equation laws may specify equations that need to be satisfied before the equation law is required to hold.
+Let us call such a combination of a list of sorts and a list of equations, a \textbf{constrained sorting context}.
+Similarly, equation laws may specify equations that need to be satisfied before the equation law is required to hold, i.e.\ they are also phrased w.r.t.\ a constrained sorting context.\footnote{Just like well-typed MAT equations need to treat the same variable $x$ systematically as having the same sort, and thus can be seen as being phrased w.r.t.\ a sorting context.}
 This has a number of consequences:
 \begin{itemize}
 	\item Both operations and equation laws now mention operations.
-	\item The mentioning of operations is only legal when their arguments satisfy the required equations, which may be provable only from certain equation laws. Thus, operations and equation laws can all arbitrarily depend on \emph{each other}.
-	\item The very concept of an \emph{arity}, now depends on both operations and equation laws.
+	\item The mentioning of operations is only legal when their arguments satisfy the required equations, which may be provable only from certain equation laws. Thus, operations and equation laws can also depend on equation laws.
+	\item The very concept of an \emph{arity}, i.e.\ a constrained sorting context, now depends on both operations and equation laws.
 \end{itemize}
 In order to maintain order, operations and equation laws are given as a \emph{telescope}, i.e.\ they are given in a specific order, and each one can rely only on previously introduced ones.
 
-A model of an EAT with $n+1$ defining clauses is then a model of the EAT with the last clause removed, which moreover has an interpretation for the last clause (a thing that is meaningful to ask, only when the previous clauses already have an interpretation).
-The category of models $\Modelcat(\atpresA_{n+1})$ is now monadic over the category of models $\Modelcat(\atpresA_n)$ of the theory with the last clause removed.\todo{I'm pretty convinced of this, but is it known?}
+A \textbf{model} of an EAT $\atpresA_{n+1}$ with $n+1$ defining clauses is then a model of the EAT $\atpresA_n$ with the last clause removed, which moreover has an interpretation for the last clause (a thing that is meaningful to ask, only when the previous clauses already have an interpretation).
+The category of models $\Modelcat(\atpresA_{n+1})$ is now monadic over $\Modelcat(\atpresA_n)$.\todo{I'm pretty convinced of this, but is it known?}
 A model of the empty theory is just an indexed set.
 
 \subsubsection{Generalized algebraic theories (GATs)}
