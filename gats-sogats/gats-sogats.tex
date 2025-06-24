@@ -29,6 +29,7 @@
 %\usepackage{epstopdf}
 %\usepackage{array}
 %\usepackage[normalem]{ulem}
+\usepackage{enumitem}
 
 \usepackage[english]{babel}
 %\usepackage[dutch]{babel}
@@ -128,7 +129,7 @@ This is what GATs bring us: to the features of EATs, they add the fact that sort
 This means that sorts, too, can depend on operations and equation laws, which obviously also depend on sorts.
 So rather than fixing a set of sorts before we even begin to speak about what a MAT/EAT is, we make the sorts part of the GAT signature, and indeed part of the telescope in such a way that each sort, operation, and equation law only depends on what comes before.
 
-\section{Signature language}
+\section{Signature language} \label{sec:gat:siglang}
 Since our notion of GATs in this text is rather intensional in nature (\cref{rem:pres-as-theory}), it makes sense to generate GATs inductively, similar to an inductive type in type theory.
 Since the possible extensions of a GAT (with an operation, an equation law or a sort) depend on what is already there, given the dependent nature of a GAT, our inductive process will feature dependent metatypes (which we will rather call \textbf{judgement forms}), suggesting that we should use an inductive-inductive type (IIT).
 Finally, we will need to impose equation laws on expressions, suggesting that we should use a quotient inductive-inductive type (QIIT), the signature of which is a GAT.
@@ -147,7 +148,7 @@ There is a correspondence of terminology, and we will use the `formal system' te
 \end{center}
 
 Thus, in the following sections, we define the signature language of GATs as a GAT/QIIT/formal system.
-Mathematically, we are following Kaposi, Kov\'acs and Altenkirch \cite{constructing-qiits} up to cosmetic changes, but we attempt to be more elaborate about the motivations.
+Mathematically, we are mostly following Kaposi, Kov\'acs and Altenkirch \cite{constructing-qiits}, but we attempt to be more elaborate about the motivations.
 
 \subsection{GATs and clauses}
 We declare that there is a judgement form of GATs, allowing us to state that something is a GAT.
@@ -237,7 +238,7 @@ It may be surprising that we add this translation operation as an \emph{inferenc
 In fact, this inference rule is admissible, i.e.\ it will ultimately be provable by induction on $T$, but the GAT/QIIT framework will not allow us to refer to admissible rules in its clauses, so we add it as a constructor.
 
 We now ask that the clause $T[\sigma]$ can in fact be desugared, i.e.
-\begin{itemize}
+\begin{itemize}[noitemsep]
 	\item if the clause introduces a sort, we can find a sort expression in $\Gamma$ of the same arity,
 	\item if the clause introduces an operation, we can desugar the operation as an expression in $\Gamma$,
 	\item if the clause introduces an equation law, than it is already provable in $\Gamma$.
@@ -359,10 +360,15 @@ Note that a desugaring $\Gamma \sez t : \El\,\hat T$ is a choice of expression o
 
 The parallel with the universe in type theory is evident.
 \begin{example}
-	The GAT of pointed sets looks like this:
+	The GAT of pointed sets $\name{PSet}$ looks like this:
 	\[
-		(\hat X : \Sort, x : \hat X)
+		(\hat X : \Sort, x : \El\,\hat X) \GAT
 	\]
+	The GAT of bipointed sets $\name{BPSet}$ is (we omit embedding translations, a.k.a.\ weakenings):
+	\[
+		(\hat X : \Sort, x : \El\,\hat X, y : \El\,\hat X) \GAT
+	\]
+	We have GAT morphisms $\iota_y : \name{PSet} \Rightarrow \name{BPSet}$ and $(x/y) : \name{BPSet} \Rightarrow \name{PSet}$.
 \end{example}
 
 \subsection{Arguments}
@@ -387,9 +393,124 @@ This leads to the following principle: in order to allow a clause $(x :: \hat A)
 This is our first important deviation from usual presentations of type theory: if we regard clauses as (large) types and $\Sort$ as a universe of small types, we are allowing only large function types with small domains.
 By labeling all function types as larger than what we allow in their domain, we keep our language first order: sorts, operations, and equation laws, can take inputs, but they cannot bind any variables in those inputs.\footnote{The reasonably astute reader may object that we claimed earlier that the signature language \emph{itself} is a GAT, and yet, we have just introduced a binder. The answer is that this is not a true binder: we have an explicit substitution calculus based on De Bruijn indices, mimicking a truly higher order language.}
 
+In order to desugar a clause with an argument, we pretend the argument is actually a clause committed to the GAT, and desugar the codomain clause:
+\[
+	\inferencel{pi:intro}{
+		\Gamma, x : \El\,\hat A \sez b : B
+	}{
+		\Gamma \sez \lambda(x :: \hat A).b : (x :: \hat A) \to B
+	}{}
+\]
+\begin{remark} \label{rem:kka-no-constructors}
+Kaposi, Kov\'acs and Altenkirch \cite{constructing-qiits} do not include the above rule,  as they care primarily about defining the right notion of GATs and much less about the right notions of GAT morphisms and desugarings.
+In that case, we are only ever interested in inhabiting $\Sort$ using the clauses already committed to the GAT. These in turn have `small' argument `types', i.e.\ not function types.
+\end{remark}
+
+If we can give an expression $a$ of sort $\hat A$ and we can desugar the clause $(x :: \hat A) \to B$, then we can desugar $B[a/x]$:
+\[
+	\inferencel{pi:elim}{
+		\Gamma \sez \hat A : \Sort &
+		\Gamma, x : \El\,\hat A \sez B \clause \\
+		\Gamma \sez f : (x :: \hat A) \to B &
+		\Gamma \sez a : \El\,\hat A
+	}{
+		\Gamma \sez f\,a : B[a/x]
+	}{}
+\]
+We omit $\upbeta$- and $\upeta$-rules for the function clause.
+
+We omit rules asserting that the above meta-operations commute with translation (substitution), and will not even remark upon such omissions in the rest of \cref{sec:gat:siglang}.
+
+\begin{example}
+	The GAT of reflexive graphs $\name{RG}$ is:
+	\[
+		(\hat N : \Sort, \hat E : \hat N \to \hat N \to \Sort, r : (x :: \hat N) \to \El(\hat E\,x\,x)) \GAT.
+	\]
+	The GAT of sets $\name{Set}$ is of course $(\hat X : \Sort)$.
+	There is a morphism
+	\[
+		(\hat X / \hat N, \lambda x.\lambda y.\hat X / \hat E, \lambda x . x / r) : \name{Set} \Leftarrow \name{RG}
+	\]
+	which will give rise to a functor on model categories that converts sets to discrete reflexive graphs.
+\end{example}
+
 \subsection{The equality sort}
 A GAT can be extended with a clause declaring that two expressions be equal.
-Thus, given 
+Thus, given two expressions of the same sort, there should be an equality clause.
+In fact, already in EATs and also in GATs, equality can appear as an assumption.
+Thus, we will make it a `small type', i.e.\ a sort.
+On the other hand, unlike Cartmell \cite{gat,gat-phd}, we have no interest in equating sorts. Thus, we will ask that the `type' of the expressions we equate, is also small, i.e.\ a sort.
+Reflexive equalities can be desugared.
+\[
+	\inferencel{eq}{
+		\Gamma \sez \hat T : \Sort \qquad
+		\Gamma \sez s, t : \El\,\hat T
+	}{
+		\Gamma \sez \idtp{\hat T} s t : \Sort
+	}{}
+	\qquad
+	\inferencel{eq:intro}{
+		\Gamma \sez \hat T : \Sort \qquad
+		\Gamma \sez t : \El\,\hat T
+	}{
+		\Gamma \sez \refl\,t : \El(\idtp{\hat T} t t)
+	}{}
+\]
+
+At this point, it is a good idea to stand back and reflect about the different notions of equality currently in play.
+Let us take an agnostic viewpoint as to whether the metatheory is intensional or extensional.
+In that case, we have:
+\begin{itemize}
+	\item Definitional equality in the metatheory, which, if it diverges from propositional equality, has a definition likely motivated by concerns of computation.
+	\item Propositional equality in the metatheory.
+	\item Definitional equality in the signature language of GATs. Since we are viewing this system as a QIIT, definitional equality is not a judgement, but simply coincides with propositional equality of the metatheory, instantiated on the type of derivations in the signature language.
+	\item Propositional equality in the signature language of GATs, as per the rule \ref{rule:eq}.
+\end{itemize}
+Since the signature language is not intended to be computed in, and since the purpose of the equality sort is to internalize equality, we might as well conflate the weakest two equality relations by adding a reflection rule.
+To be sure, we also add uniqueness of identity proofs (UIP).
+\[
+	\inferencel{eq:reflection}{
+		\Gamma \sez e : \idtp{\hat T} s t
+	}{
+		\Gamma \sez s = t : \El\,\hat T
+	}{}
+	\qquad
+	\inferencel{eq:uip}{
+		\Gamma \sez d, e : \idtp{\hat T} s t
+	}{
+		\Gamma \sez d = e : \idtp{\hat T} s t
+	}{}
+\]
+\begin{example}
+	The GAT of categories $\Cat$ has the following clauses:
+	\begin{itemize}[noitemsep]
+		\item $\hat O : \Sort$,
+		\item $\hat H : \hat O \to \hat O \to \Sort$,
+		\item $\id : (x :: \hat O) \to \El\,\hat H\,x\,x$,
+		\item $\loch \circ \loch : (x, y, z :: \hat O) \to \El(\hat H\,y\,z) \to \El(\hat H\,x\,y) \to \El(\hat H\,x\,z)$,
+		\item $\name{lunit} : (x, y :: \hat O) \to (\vfi :: \hat H\,x\,y) \to \idtp{\hat H\,x\,y}{\id_y \circ_{x,y,y} \vfi}{\vfi}$,
+		\item $\name{runit} : (x, y :: \hat O) \to (\vfi :: \hat H\,x\,y) \to \idtp{\hat H\,x\,y}{\vfi \circ_{x,x,y} \id_x}{\vfi}$,
+		\item $\name{assoc} : (w, x, y, z :: \hat O) \to (\vfi :: \hat H\,w\,x) \to (\chi :: \hat H\,x\,y) \to (\psi :: \hat H\,y\,z) \to \idtp{\hat H\,w\,z}{(\psi \circ_{x,y,z} \chi) \circ_{w,x,z} \vfi}{\psi \circ_{w,y,z} (\chi \circ_{w,x,y} \vfi)}$,
+	\end{itemize}
+\end{example}
+
+\subsection{Desugarable record types}
+We can unproblematically add the following type formers, with standard rules:
+\begin{itemize}[noitemsep]
+	\item A unit sort (hence a unit clause),
+	\item $\Sigma$-sorts of sorts (which can be desugared roughly by currying),
+	\item $\Sigma$-clauses of clauses (which can be desugared roughly by splitting their components in the context),
+	\item Record-sorts of sorts and record-clauses of clauses (which can be desugared using unit and $\Sigma$).
+\end{itemize}
+
+\subsection{No datatypes}
+We cannot add positive datatypes like booleans and coproducts, as this would allow the declaration of operators that output information not confined to the internal sorts, thus adding real expressivity. For example, all GATs have a terminal model\todo{right?}, but the following non-GATs do not:
+\[
+	(\hat X : \Sort, \name{split} : \hat X \to \Bool), \qquad
+	(x : \Bool).
+\]
+
+\section{The CwF model}
 
 \section*{Acknowledgements}
 
