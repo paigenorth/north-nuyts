@@ -63,14 +63,20 @@
 
 \tableofcontents
 
-\section{Generalized Algebraic Theories (GATs)}
+\part{Generalized Algebraic Theories (GATs)}
 
-\subsection{Motivation}
+\section{Motivation}
 We briefly discuss increasingly complex notions of algebraic theories, in order to gradually explain the motivation, design, and complexity of GATs and their models.
 This discussion is somewhat informal and glosses over semi-technical aspects such as the distinction between numbers, finite sets, and arbitrary sets.
 We will get more formal when we treat GATs specifically.
 
-\subsubsection{Algebraic theories}
+\begin{remark} \label{rem:pres-as-theory}
+In this text, we take an intensional view on algebraic theories, using the term `theory' to refer to a presentation of the theory in terms of operations and equation laws.
+A more extensional view would use the word `theory' to denote the resulting collection of expressions, made up of nested operations, quotiented by the equation laws, as represented e.g.\ by a Lawvere category (see further).
+Multiple presentations can lead to equivalent Lawvere categories.
+\end{remark}
+
+\subsection{Algebraic theories}
 An \textbf{algebraic theory} consists of a number of operations, each with an arity (represented as a number, or perhaps as a finite set), and a number of equation laws governing these.
 Examples are monoid theory, group theory, ring theory, linear algebra over a fixed field (assuming we have a unary scalar multiplication operation for every scalar in the field), \ldots{}
 A \textbf{model} consists of a set (called the carrier of the model), and an interpretation of each of the operations on the carrier, such that the laws are respected.
@@ -89,7 +95,7 @@ An algebraic theory $\atpresA$ gives rise to:
 \end{itemize}
 The composite $U_\atpresA F_\atpresA$ is then a monad $M_\atpresA$ whose Eilenberg-Moore category is $\Modelcat(\atpresA)$ and whose Kleisli category is $\Lawcat(\atpresA)\op$, if arities in the Lawvere category are represented as arbitrary sets.
 
-\subsubsection{Multisorted algebraic theories (MATs)}
+\subsection{Multisorted algebraic theories (MATs)}
 A \textbf{multisorted algebraic theory} (MAT) for a given, fixed set $S$ of (non-dependent) sorts, is roughly the same thing except that operations now have input and output sorts.
 That is, every operation has a single output sort, whereas its arity is now no longer a number of arguments but a list of argument sorts whose length is the number of arguments.
 Let us call such a list, a \textbf{sorting context}.\footnote{`Sorting' as in `typing': assigning a sort. Not as in quicksort.}
@@ -99,7 +105,7 @@ The category $\Modelcat(\atpresA)$ is now monadic over $\Set^S$.
 The Lawvere category $\Lawcat(\atpresA)$ now has as objects, sorting contexts, and as morphisms $\sigma : \Gamma \to \Delta$, well-typed simultaneous substitutions, i.e. $\sigma$ assigns to each variable in $\Delta$ a well-typed expression in context $\Gamma$.
 If we ask sorting contexts to have finite length, then it embeds fully faithfully into the opposite of the Kleisli category of the monad $M_\atpresA$ on $\Set^S$.
 
-\subsubsection{Essentially algebraic theories (EATs)}
+\subsection{Essentially algebraic theories (EATs)}
 An \textbf{essentially algebraic theory} (EAT) for a given, fixed set $S$ of constant sorts, differs from a MAT in that the arity of an operation may specify not only a list of typed variables, but also a list of equations that these must satisfy, in order for the operation to be applicable.
 Let us call such a combination of a list of sorts and a list of equations, a \textbf{constrained sorting context}.
 Similarly, equation laws may specify equations that need to be satisfied before the equation law is required to hold, i.e.\ they are also phrased w.r.t.\ a constrained sorting context.\footnote{Just like well-typed MAT equations need to treat the same variable $x$ systematically as having the same sort, and thus can be seen as being phrased w.r.t.\ a sorting context.}
@@ -115,14 +121,275 @@ A \textbf{model} of an EAT $\atpresA_{n+1}$ with $n+1$ defining clauses is then 
 The category of models $\Modelcat(\atpresA_{n+1})$ is now monadic over $\Modelcat(\atpresA_n)$.\todo{I'm pretty convinced of this, but is it known?}
 A model of the empty theory is just an indexed set.
 
-\subsubsection{Generalized algebraic theories (GATs)}
+\subsection{Generalized algebraic theories (GATs)}
 One way to frame EATs is that they extend MATs with a single dependent sort: the equality sort, which can now be mentioned under all circumstances where any other sort could be mentioned.
 It is generally known that disposing over an equality type, leads to similar expressivity as general type dependency.
 This is what GATs bring us: to the features of EATs, they add the fact that sorts, too, can be dependent and can impose equations on their inputs.
 This means that sorts, too, can depend on operations and equation laws, which obviously also depend on sorts.
 So rather than fixing a set of sorts before we even begin to speak about what a MAT/EAT is, we make the sorts part of the GAT signature, and indeed part of the telescope in such a way that each sort, operation, and equation law only depends on what comes before.
 
-\todoi{Cite a bunch of stuff}
+\section{Signature language}
+Since our notion of GATs in this text is rather intensional in nature (\cref{rem:pres-as-theory}), it makes sense to generate GATs inductively, similar to an inductive type in type theory.
+Since the possible extensions of a GAT (with an operation, an equation law or a sort) depend on what is already there, given the dependent nature of a GAT, our inductive process will feature dependent metatypes (which we will rather call \textbf{judgement forms}), suggesting that we should use an inductive-inductive type (IIT).
+Finally, we will need to impose equation laws on expressions, suggesting that we should use a quotient inductive-inductive type (QIIT), the signature of which is a GAT.
+There is a correspondence of terminology, and we will use the `formal system' terminology for the theory of GATs:
+\begin{center}
+	\begin{tabular}{l | l | l}
+		\textbf{GATs} & \textbf{QIITs} & \textbf{Formal systems} \\ \hline
+		sort & type & judgement form \\
+		operation & constructor & inference rule \\
+		$-$ argument & $-$ argument & $-$ premise \\
+		$-$ sorting context & $-$ typing context & $-$ (metacontext / collection of premises) \\
+		$-$ output & $-$ output & $-$ conclusion \\
+		equation law & equality constructor & equality inference rule \\ \hline
+		(admissible) & provable by induction & admissible
+	\end{tabular}
+\end{center}
+
+Thus, in the following sections, we define the signature language of GATs as a GAT/QIIT/formal system.
+Mathematically, we are following Kaposi, Kov\'acs and Altenkirch \cite{constructing-qiits} up to cosmetic changes, but we attempt to be more elaborate about the motivations.
+
+\subsection{GATs and clauses}
+We declare that there is a judgement form of GATs, allowing us to state that something is a GAT.
+There is also a judgement form of possible extensions for a given GAT, called \textbf{clauses}:
+\[
+	\inferencel{jud:gat}{
+	}{
+		(\Gamma \GAT) \jud
+	}{}
+	\qquad
+	\inferencel{jud:clause}{
+		\Gamma \GAT
+	}{
+		(\Gamma \sez T \clause) \jud
+	}{}
+\]
+A GAT has either zero or $n+1$ clauses:
+\[
+	\inferencel{gat:empty}{
+	}{
+		() \GAT
+	}{}
+	\qquad
+	\inferencel{gat:ext}{
+		\Gamma \GAT \qquad
+		\Gamma \sez T \clause
+	}{
+		\Gamma, x : T \GAT
+	}{}
+\]
+(We will not bore either ourselves or the reader by discussing the perks of variable binding here. In short, we assign them names for human communication, but in truth they are De Bruijn indices.)
+
+We remark a parallel between GATs and clauses in the signature language of GATs, and contexts and types in type theory.
+
+\subsection{Morphisms and desugarings}
+The reader likely expected us to proceed by adding infrastructure to inhabit the clause judgement with sorts, operations and equation laws.
+However, we first take a moment to establish a notion of GAT morphisms.
+\begin{itemize}
+	\item A morphism of algebraic theories $\atpresA \Rightarrow \atpresB$ assigns to every operation in $\atpresA$ an \emph{expression} (consisting of nested operations) of the same arity in $\atpresB$, such that the resulting translation of expressions from $\atpresA$ to $\atpresB$ validates the equation laws of $\atpresA$ as corollaries of those of $\atpresB$.
+	\item This notion generalizes easily to MATs and EATs for the \emph{same} collection of sorts $S$. However, we can generalize slightly by considering morphisms from a MAT/EAT $\atpresA$ with sorts in $R$ to a MAT/EAT $\atpresB$ with sorts in $S$, relative to a function $f : R \to S$.
+	Still, nothing remarkable happens.
+	\item A morphism of GATs $\atpresA \Rightarrow \atpresB$ assigns
+	to every sort in $\atpresA$ a sort expression (where by sort expression, we mean that expressions may be plugged into the sort's dependencies) in $\atpresB$, and
+	to every operation in $\atpresA$ an expression in $\atpresB$,
+	such that every equation law in $\atpresA$ is provable for the translated expressions in $\atpresB$.
+	Of course, all of this should happen in a well-typed manner.
+\end{itemize}
+
+We declare that there is a judgement form of GAT morphisms.
+%, but we take the liberty to \emph{flip the arrow}, and call comorphisms \textbf{substitutions}.
+Trivially, there is always a morphism from the empty GAT.
+Equally trivially, a GAT embeds into a GAT with an additional clause.
+%substitution to the empty GAT.
+\[
+	\inferencel{jud:hom}{
+		\Gamma \GAT \qquad
+		\Delta \GAT
+	}{
+		(\sigma : \Gamma \Leftarrow \Delta) \jud
+	}{}
+	\qquad
+	\inferencel{gat:empty:out}{
+		\Gamma \GAT
+	}{
+		() : \Gamma \Leftarrow ()
+	}{}
+	\qquad
+	\inferencel{gat:ext:embed}{
+		\Gamma \sez T \clause
+	}{
+		\iota_x : (\Gamma, x : T) \Leftarrow \Gamma
+	}{}
+\]
+How do we create
+%a substitution $\Gamma \to (\Delta, x : T)$, i.e.\
+a morphism $(\Delta, x : T) \Rightarrow \Gamma$? Clearly, for starters, we need to translate all clauses in $\Delta$, i.e. we start from a morphism $\sigma : \Delta \Rightarrow \Gamma$.
+The clause $T$, which refers to concepts in $\Delta$, can then be translated to a clause extending $\Gamma$:
+\[
+	\inferencel{clause:transl}{
+		\sigma : \Gamma \Leftarrow \Delta \qquad
+		\Delta \sez T \clause
+	}{
+		\Gamma \sez T[\sigma] \clause
+	}{}
+\]
+It may be surprising that we add this translation operation as an \emph{inference rule} of the theory, i.e.\ as a syntax constructor.
+In fact, this inference rule is admissible, i.e.\ it will ultimately be provable by induction on $T$, but the GAT/QIIT framework will not allow us to refer to admissible rules in its clauses, so we add it as a constructor.
+
+We now ask that the clause $T[\sigma]$ can in fact be desugared, i.e.
+\begin{itemize}
+	\item if the clause introduces a sort, we can find a sort expression in $\Gamma$ of the same arity,
+	\item if the clause introduces an operation, we can desugar the operation as an expression in $\Gamma$,
+	\item if the clause introduces an equation law, than it is already provable in $\Gamma$.
+\end{itemize}
+To this end, we declare a judgement form of desugarings.
+We immediately provide a structural operation: if we add the same clause twice, then the second time, we can desugar it.
+\[
+	\inferencel{jud:desugar}{
+		\Gamma \sez T \clause
+	}{
+		(\Gamma \sez t : T) \jud
+	}{}
+	\qquad
+	\inferencel{gat:ext:last}{
+		\Gamma \sez T \clause
+	}{
+		\Gamma, x : T \sez x : T[\iota_x]
+	}{}
+\]
+Now we can express how to build morphisms from an extended GAT:
+\[
+	\inferencel{gat:ext:out}{
+		\Gamma \GAT &
+		\Delta \sez T \clause \\
+		\sigma : \Gamma \Leftarrow \Delta &
+		\Gamma \sez t : T[\sigma]
+	}{
+		(\sigma, t/x) : \Gamma \Leftarrow (\Delta, x : T)
+	}{}
+\]
+
+Our suggestive notations serve to urge the reader to become aware of the following correspondence:
+\begin{center}
+	\begin{tabular}{l l | l l}
+		& \text{GAT signature language} && \text{type theory} \\ \hline
+		GATs & $\Gamma \GAT$ & contexts & $\Gamma \ctx$ \\
+		clauses & $\Gamma \sez T \clause$ & types & $\Gamma \sez T \type$ \\
+		desugarings & $\Gamma \sez t : T$ & terms & $\Gamma \sez t : T$ \\
+		morphisms & $\sigma : \Gamma \Leftarrow \Delta$ & substitutions & $\sigma : \Gamma \to \Delta$
+	\end{tabular}
+\end{center}
+
+We add rules completing the signature language that we built so far to become identical to the structural rules of dependent type theory, as presented in similar style in \cite[\S 3.2.1-3.2.2]{nuyts-phd}, but of course also in numerous other works, and of course in the original definition of the signature language \cite{constructing-qiits}. Concretely:
+
+We add rules for identity and composite morphisms (denoted in diagrammatic order as $\tau ; \sigma$) subject to category laws, so that GATs and GAT morphisms form a category.
+We allow the translation of desugarings:
+\[
+	\inferencel{desugar:transl}{
+		\Delta \sez t : T \qquad
+		\sigma : \Gamma \Leftarrow \Delta
+	}{
+		\Gamma \sez t[\sigma] : T[\sigma]
+	}{}
+\]
+We add presheaf laws to clauses and desugarings, so that the identity translation does nothing, while translating along a composite morphism, amounts to consecutive translations.
+
+We add `$\upbeta$-laws' to morphisms out of extended GATs:
+\[
+	\inferencel{gat:ext:embed:beta}{
+		\Gamma \GAT &
+		\Delta \sez T \clause \\
+		\sigma : \Gamma \Leftarrow \Delta &
+		\Gamma \sez t : T[\sigma]
+	}{
+		((\sigma, t/x) ; \iota_x) = \sigma : \Gamma \Leftarrow \Delta
+	}{}
+	\qquad
+	\inferencel{gat:ext:last:beta}{
+		\Gamma \GAT &
+		\Delta \sez T \clause \\
+		\sigma : \Gamma \Leftarrow \Delta &
+		\Gamma \sez t : T[\sigma]
+	}{
+		\Gamma \sez x[\sigma, t/x] = t : T[\sigma]
+	}{}
+\]
+We add `$\upeta$-laws' to morphisms, expressing that $()$ is the \emph{only} morphism out of the empty GAT, and that any morphism $\sigma$ out of an extended GAT can be reconstructed as $(\iota_x ; \sigma, x[\sigma]/x)$.
+
+\begin{example}
+	Consider the theory of monoids, to which we can add a few clauses:
+	\begin{itemize}
+		\item A ternary operation $\loch * \loch * \loch$,
+		\item An equation law demanding that $x * y * z = (x * y) * z$,
+		\item An equation law demanding that $x * y * z = x * (y * z)$.
+	\end{itemize}
+	The last law is immediately desugarable using the previous law, and associativity of binary multiplication.
+	
+	The first clause in isolation, is desugarable as $x * y * z := (x * y) * z$.
+	This creates a morphism from the theory of monoids extended with the first clause, to the theory of monoids (by extending the identity morphism with this one desugaring), allowing us to translate the second law.
+	This can then be desugared as it holds by reflexivity.
+	
+	Since desugarings can be translated, the desugaring of the last law remains valid as we desugar the first two laws.
+\end{example}
+
+\subsection{Sorts}
+We can extend any GAT $\Gamma$ by declaring that there be a sort.
+Thus, for any GAT $\Gamma$, there must be a sort that expresses this:
+\[
+	\inferencel{sort}{
+		\Gamma \GAT
+	}{
+		\Gamma \sez \Sort \clause
+	}{}
+\]
+Note that this only gives us non-dependent sorts.
+Since all clauses have the same notion of arities, we will treat these uniformly below.
+
+Note that a desugaring $\Gamma \sez \hat T : \Sort$ of a clause announcing that there be a sort, is a choice of a sort expression that is well-formed in the GAT $\Gamma$.
+
+Given a well-formed sort expression $\hat T$ in a GAT $\Gamma$, we can extend $\Gamma$ by declaring that $\hat T$ has an element, thus introducing nullary operations:
+\[
+	\inferencel{sort:elim}{
+		\Gamma \sez \hat T : \Sort
+	}{
+		\Gamma \sez \El\,\hat T \clause
+	}{}
+\]
+Note that a desugaring $\Gamma \sez t : \El\,\hat T$ is a choice of expression of sort $\El\,\hat T$.
+
+The parallel with the universe in type theory is evident.
+\begin{example}
+	The GAT of pointed sets looks like this:
+	\[
+		(\hat X : \Sort, x : \hat X)
+	\]
+\end{example}
+
+\subsection{Arguments}
+An operation in a GAT specifies, as arity, a list of dependent sorts.
+In fact, in order to accommodate dependency, this list is a \emph{telescope}: each sort may depend on the previous arguments.
+Moreover, all arguments may depend on the clauses already committed to the GAT.
+
+Perhaps surprisingly, we will build clauses with arguments by starting from an argument-free clause and then pushing the arguments on top, one by one, starting with the \emph{most} dependent one.
+This is made possible by a crucial observation: in order to check whether a certain argument sort is well-typed, we need to take into account dependencies on both previous clauses and previous arguments, but \emph{we do not care which is which}.
+Not every prior clause can be regarded as an argument, as we can never take sorts as arguments, but every prior argument can be regarded as a committed clause.
+
+This leads to the following principle: in order to allow a clause $(x :: \hat A) \to B$ for some sort expression $\hat A$, we require that $B$ is a well-formed clause in the same GAT extended with the clause $\El\,\hat A$:
+\[
+	\inferencel{pi}{
+		\Gamma \sez \hat A : \Sort \\
+		\Gamma, x : \El\,\hat A \sez B \clause	
+	}{
+		\Gamma \sez (x :: \hat A) \to B \clause
+	}{}
+\]
+(The double colon serves to prevent cognitive dissonance between $x : \El\,\hat A$ in the extended GAT and $x :: \hat A$ in the domain of the function clause.)
+This is our first important deviation from usual presentations of type theory: if we regard clauses as (large) types and $\Sort$ as a universe of small types, we are allowing only large function types with small domains.
+By labeling all function types as larger than what we allow in their domain, we keep our language first order: sorts, operations, and equation laws, can take inputs, but they cannot bind any variables in those inputs.\footnote{The reasonably astute reader may object that we claimed earlier that the signature language \emph{itself} is a GAT, and yet, we have just introduced a binder. The answer is that this is not a true binder: we have an explicit substitution calculus based on De Bruijn indices, mimicking a truly higher order language.}
+
+\subsection{The equality sort}
+A GAT can be extended with a clause declaring that two expressions be equal.
+Thus, given 
 
 \section*{Acknowledgements}
 
@@ -130,6 +397,6 @@ So rather than fixing a set of sorts before we even begin to speak about what a 
 \section{Version History}
 
 \bibliographystyle{alphaurl}
-\bibliography{keml-refs.bib}
+\bibliography{gats-sogats.bib}
 
 \end{document}
