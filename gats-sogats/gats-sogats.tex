@@ -512,6 +512,52 @@ We cannot add positive datatypes like booleans and coproducts, as this would all
 \]
 
 \section{The CwF model}
+The signature language of GATs has been presented as a GAT.
+It is a GAT which defines the very concept of a GAT.
+We call this the \textbf{elderGAT} $\eldergat$.
+As any GAT, it comes with a category of models $\Modelcat(\eldergat)$ with an initial object.\todo{Cite something.}
+This initial model is the syntax of the signature language, up to definitional equality.
+
+As the inference rules entirely incorporate the structural rules of dependent type theory, it follows that the models will be categories with families (CwF) \cite{dybjer-cwf} with extra structure, while the morphisms will be strict CwF morphisms preserving that structure on the nose.
+
+The initial model $\GAT$ has:
+\begin{itemize}[noitemsep]
+	\item as objects: GATs,
+	\item as morphisms: \textbf{substitutions} (i.e.\ GAT morphisms in reverse direction),
+	\item as types: GAT clauses,
+	\item as terms: clause resolutions.
+\end{itemize}
+
+We want to show that every GAT has a category of models. In fact, we can make this a CwF with:
+\begin{itemize}[noitemsep]
+	\item as objects: models,
+	\item as morphisms: model morphisms,
+	\item as types: displayed models,
+	\item as terms: sections.
+\end{itemize}
+Since GATs are inductively generated, as they are objects of the syntactic category $\GATcat$, we want to define the category of models of a GAT by induction on the GAT.
+That is, we want to build an object $\CwF \in \Modelcat(\eldergat)$ which is the CwF of CwFs equipped with the extra structure needed to make it a model of the elderGAT, and then take the unique morphism $\Modelcat : \GATcat \to \CwF$ as the function that sends a GAT $\Gamma \in \GATcat$ to its CwF of models $\Modelcat(\Gamma) \in \CwF$.
+
+In the remainder of this section, we build the model $\CwF \in \Modelcat(\eldergat)$.
+
+\subsection{Judgement forms}
+When we view models of the elderGAT as CwFs, we do so by interpreting GATs as objects, morphisms $\sigma : \Gamma \Leftarrow \Delta$ as morphisms $\interp \sigma : \interp \Gamma \to \interp \Delta$, clauses as types, and resolutions as terms.
+
+As such, by the above exposition, in this case, we will interpret GATs as CwFs, morphisms $\sigma : \Gamma \Leftarrow \Delta$ as strict CwF morphisms $\interp \sigma : \interp \Gamma \to \interp \Delta$, clauses as displayed GATs, and resolutions as sections.
+
+\subsection{Structural rules}
+The fact that this $\CwF$ constitutes a CwF, interprets all the structural rules of dependent type theory that are integrated into the presentation of the signature language.
+Nevertheless, it is worthwhile to expand a little on how this is the case:
+
+\subsubsection{The empty GAT}
+The empty GAT $()$ is interpreted as the terminal CwF, which has a single object, a single identity morphism, a single displayed type, and a single section.
+
+\subsubsection{Extended GATs}
+If we extend a GAT $\Gamma$ with a clause $T$, in the semantics we get a CwF of models $\Modelcat(\Gamma)$ and a \emph{displayed CwF of model extensions} $\Modelcat(T)$ over it. We interpret $\Modelcat(\Gamma, x : T)$ as the total space of $\Modelcat(T)$.
+
+Weakening (\ref{rule:gat:ext:embed}) is interpreted as the first projection from the total space, while the variable rule (\ref{rule:gat:ext:last}) is the second projection. Substitutions are extended by pairing.
+
+\subsection{Sorts}
 
 \section*{Acknowledgements}
 
