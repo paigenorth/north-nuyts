@@ -558,6 +558,21 @@ If we extend a GAT $\Gamma$ with a clause $T$, in the semantics we get a CwF of 
 Weakening (\ref{rule:gat:ext:embed}) is interpreted as the first projection from the total space, while the variable rule (\ref{rule:gat:ext:last}) is the second projection. Substitutions are extended by pairing.
 
 \subsection{Sorts}
+Being a non-dependent type/clause, $\Sort$ should be modelled as a displayed CwF over the terminal CwF, i.e. as an ordinary CwF.\footnote{$\CwF$ is a \emph{democratic} CwF: objects correspond to types over the terminal object.}
+In this case, we take the CwF $\Set$ of sets.
+
+Over $\Set$, we have the displayed CwF $\El$ of elements, whose total space is the CwF of pointed sets.
+An interpretation of a resolution $\Gamma \sez \hat T : \Sort$ is essentially a CwF morphism $\Modelcat(\hat T) : \Modelcat(\Gamma) \to \Set$,\footnote{There is a slight abuse of notation, where we exploit democracy to turn the semantics of $\hat T$ from a section into a CwF morphism.} along which we can pull back the displayed CwF $\El$.
+We set $\Modelcat(\El\,\hat T) := \El[\Modelcat(\hat T)]$, a displayed model over $\Modelcat(\Gamma)$.
+
+\subsection{Arguments}
+We need to model the semantics of $(x :: \hat A) \to B$.
+We are given a CwF $\Modelcat(\Gamma)$ and a CwF morphism $\Modelcat(\hat A) : \Modelcat(\Gamma) \to \Set$, as well as a displayed CwF $\Modelcat(B)$ over $\Modelcat(\Gamma, x : \El\,\hat A) = \Modelcat(\Gamma).\El[\Modelcat(\hat A)]$.
+We need a displayed CwF $\Modelcat((x :: \hat A) \to B)$ over $\Modelcat(\Gamma)$:
+\begin{itemize}
+	\item An object $f$ over $\gamma$ is a function sending $x \in \El[\Modelcat(\hat A)](\gamma) = \hat A(\gamma)$,
+	\item 
+\end{itemize}
 
 \section*{Acknowledgements}
 
