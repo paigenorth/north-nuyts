@@ -183,7 +183,7 @@ A GAT has either zero or $n+1$ clauses:
 
 We remark a parallel between GATs and clauses in the signature language of GATs, and contexts and types in type theory.
 
-\subsection{Morphisms and desugarings}
+\subsection{Morphisms and clause resolutions}
 The reader likely expected us to proceed by adding infrastructure to inhabit the clause judgement with sorts, operations and equation laws.
 However, we first take a moment to establish a notion of GAT morphisms.
 \begin{itemize}
@@ -237,16 +237,16 @@ The clause $T$, which refers to concepts in $\Delta$, can then be translated to 
 It may be surprising that we add this translation operation as an \emph{inference rule} of the theory, i.e.\ as a syntax constructor.
 In fact, this inference rule is admissible, i.e.\ it will ultimately be provable by induction on $T$, but the GAT/QIIT framework will not allow us to refer to admissible rules in its clauses, so we add it as a constructor.
 
-We now ask that the clause $T[\sigma]$ can in fact be desugared, i.e.
+We now ask that the clause $T[\sigma]$ can in fact be resolved, i.e.
 \begin{itemize}[noitemsep]
-	\item if the clause introduces a sort, we can find a sort expression in $\Gamma$ of the same arity,
-	\item if the clause introduces an operation, we can desugar the operation as an expression in $\Gamma$,
-	\item if the clause introduces an equation law, than it is already provable in $\Gamma$.
+	\item if the clause introduces a sort, we can implement the sort as a sort expression in $\Gamma$ of the same arity,
+	\item if the clause introduces an operation, we can implement the operation as an expression in $\Gamma$,
+	\item if the clause introduces an equation law, then it is already provable in $\Gamma$.
 \end{itemize}
-To this end, we declare a judgement form of desugarings.
-We immediately provide a structural operation: if we add the same clause twice, then the second time, we can desugar it.
+To this end, we declare a judgement form of clause resolutions.
+We immediately provide a structural operation: if we add the same clause twice, then the second time, we can resolve it.
 \[
-	\inferencel{jud:desugar}{
+	\inferencel{jud:resol}{
 		\Gamma \sez T \clause
 	}{
 		(\Gamma \sez t : T) \jud
@@ -276,7 +276,7 @@ Our suggestive notations serve to urge the reader to become aware of the followi
 		& \text{GAT signature language} && \text{type theory} \\ \hline
 		GATs & $\Gamma \GAT$ & contexts & $\Gamma \ctx$ \\
 		clauses & $\Gamma \sez T \clause$ & types & $\Gamma \sez T \type$ \\
-		desugarings & $\Gamma \sez t : T$ & terms & $\Gamma \sez t : T$ \\
+		cl.\ resolutions & $\Gamma \sez t : T$ & terms & $\Gamma \sez t : T$ \\
 		morphisms & $\sigma : \Gamma \Leftarrow \Delta$ & substitutions & $\sigma : \Gamma \to \Delta$
 	\end{tabular}
 \end{center}
@@ -284,16 +284,16 @@ Our suggestive notations serve to urge the reader to become aware of the followi
 We add rules completing the signature language that we built so far to become identical to the structural rules of dependent type theory, as presented in similar style in \cite[\S 3.2.1-3.2.2]{nuyts-phd}, but of course also in numerous other works, and of course in the original definition of the signature language \cite{constructing-qiits}. Concretely:
 
 We add rules for identity and composite morphisms (denoted in diagrammatic order as $\tau ; \sigma$) subject to category laws, so that GATs and GAT morphisms form a category.
-We allow the translation of desugarings:
+We allow the translation of clause resolutions:
 \[
-	\inferencel{desugar:transl}{
+	\inferencel{resol:transl}{
 		\Delta \sez t : T \qquad
 		\sigma : \Gamma \Leftarrow \Delta
 	}{
 		\Gamma \sez t[\sigma] : T[\sigma]
 	}{}
 \]
-We add presheaf laws to clauses and desugarings, so that the identity translation does nothing, while translating along a composite morphism, amounts to consecutive translations.
+We add presheaf laws to clauses and resolutions, so that the identity translation does nothing, while translating along a composite morphism, amounts to consecutive translations.
 
 We add `$\upbeta$-laws' to morphisms out of extended GATs:
 \[
@@ -324,13 +324,13 @@ We add `$\upeta$-laws' to morphisms, expressing that $()$ is the \emph{only} mor
 		\item An equation law demanding that $x * y * z = (x * y) * z$,
 		\item An equation law demanding that $x * y * z = x * (y * z)$.
 	\end{itemize}
-	The last law is immediately desugarable using the previous law, and associativity of binary multiplication.
+	The last law is immediately resolvable (provable) using the previous law, and associativity of binary multiplication.
 	
-	The first clause in isolation, is desugarable as $x * y * z := (x * y) * z$.
-	This creates a morphism from the theory of monoids extended with the first clause, to the theory of monoids (by extending the identity morphism with this one desugaring), allowing us to translate the second law.
-	This can then be desugared as it holds by reflexivity.
+	The first clause in isolation, is resolvable (implementable) as $x * y * z := (x * y) * z$.
+	This creates a morphism from the theory of monoids extended with the first clause, to the theory of monoids (by extending the identity morphism with this one clause resolution), allowing us to translate the second law.
+	This can then be resolved (proven) as it holds by reflexivity.
 	
-	Since desugarings can be translated, the desugaring of the last law remains valid as we desugar the first two laws.
+	Since resolutions can be translated, the resolution of the last law remains valid as we resolve the first two laws.
 \end{example}
 
 \subsection{Sorts}
@@ -346,7 +346,7 @@ Thus, for any GAT $\Gamma$, there must be a sort that expresses this:
 Note that this only gives us non-dependent sorts.
 Since all clauses have the same notion of arities, we will treat these uniformly below.
 
-Note that a desugaring $\Gamma \sez \hat T : \Sort$ of a clause announcing that there be a sort, is a choice of a sort expression that is well-formed in the GAT $\Gamma$.
+Note that a resolution $\Gamma \sez \hat T : \Sort$ of a clause announcing that there be a sort, is a choice of a sort expression that is well-formed in the GAT $\Gamma$.
 
 Given a well-formed sort expression $\hat T$ in a GAT $\Gamma$, we can extend $\Gamma$ by declaring that $\hat T$ has an element, thus introducing nullary operations:
 \[
@@ -356,9 +356,11 @@ Given a well-formed sort expression $\hat T$ in a GAT $\Gamma$, we can extend $\
 		\Gamma \sez \El\,\hat T \clause
 	}{}
 \]
-Note that a desugaring $\Gamma \sez t : \El\,\hat T$ is a choice of expression of sort $\El\,\hat T$.
+Note that a resolution $\Gamma \sez t : \El\,\hat T$ is a choice of expression of sort $\El\,\hat T$.
 
 The parallel with the universe in type theory is evident.
+
+We omit rules asserting that the above meta-operations (i.e.\ operations of the signature language of GATs) commute with translation (substitution), and will not even remark upon such omissions in the rest of \cref{sec:gat:siglang}.
 \begin{example}
 	The GAT of pointed sets $\name{PSet}$ looks like this:
 	\[
@@ -393,7 +395,7 @@ This leads to the following principle: in order to allow a clause $(x :: \hat A)
 This is our first important deviation from usual presentations of type theory: if we regard clauses as (large) types and $\Sort$ as a universe of small types, we are allowing only large function types with small domains.
 By labeling all function types as larger than what we allow in their domain, we keep our language first order: sorts, operations, and equation laws, can take inputs, but they cannot bind any variables in those inputs.\footnote{The reasonably astute reader may object that we claimed earlier that the signature language \emph{itself} is a GAT, and yet, we have just introduced a binder. The answer is that this is not a true binder: we have an explicit substitution calculus based on De Bruijn indices, mimicking a truly higher order language.}
 
-In order to desugar a clause with an argument, we pretend the argument is actually a clause committed to the GAT, and desugar the codomain clause:
+In order to resolve a clause with an argument, we pretend the argument is actually a clause committed to the GAT, and resolve the codomain clause:
 \[
 	\inferencel{pi:intro}{
 		\Gamma, x : \El\,\hat A \sez b : B
@@ -402,11 +404,11 @@ In order to desugar a clause with an argument, we pretend the argument is actual
 	}{}
 \]
 \begin{remark} \label{rem:kka-no-constructors}
-Kaposi, Kov\'acs and Altenkirch \cite{constructing-qiits} do not include the above rule,  as they care primarily about defining the right notion of GATs and much less about the right notions of GAT morphisms and desugarings.
+Kaposi, Kov\'acs and Altenkirch \cite{constructing-qiits} do not include the above rule,  as they care primarily about defining the right notion of GATs and much less about the right notions of GAT morphisms and clause resolutions.
 In that case, we are only ever interested in inhabiting $\Sort$ using the clauses already committed to the GAT. These in turn have `small' argument `types', i.e.\ not function types.
 \end{remark}
 
-If we can give an expression $a$ of sort $\hat A$ and we can desugar the clause $(x :: \hat A) \to B$, then we can desugar $B[a/x]$:
+If we can give an expression $a$ of sort $\hat A$ and we can resolve the clause $(x :: \hat A) \to B$, then we can resolve $B[a/x]$:
 \[
 	\inferencel{pi:elim}{
 		\Gamma \sez \hat A : \Sort &
@@ -418,8 +420,6 @@ If we can give an expression $a$ of sort $\hat A$ and we can desugar the clause 
 	}{}
 \]
 We omit $\upbeta$- and $\upeta$-rules for the function clause.
-
-We omit rules asserting that the above meta-operations commute with translation (substitution), and will not even remark upon such omissions in the rest of \cref{sec:gat:siglang}.
 
 \begin{example}
 	The GAT of reflexive graphs $\name{RG}$ is:
@@ -440,7 +440,7 @@ Thus, given two expressions of the same sort, there should be an equality clause
 In fact, already in EATs and also in GATs, equality can appear as an assumption.
 Thus, we will make it a `small type', i.e.\ a sort.
 On the other hand, unlike Cartmell \cite{gat,gat-phd}, we have no interest in equating sorts. Thus, we will ask that the `type' of the expressions we equate, is also small, i.e.\ a sort.
-Reflexive equalities can be desugared.
+Reflexive equalities can be resolved.
 \[
 	\inferencel{eq}{
 		\Gamma \sez \hat T : \Sort \qquad
@@ -481,6 +481,7 @@ To be sure, we also add uniqueness of identity proofs (UIP).
 		\Gamma \sez d = e : \idtp{\hat T} s t
 	}{}
 \]
+Note that a resolution of an equality clause $\Gamma \sez e : \idtp{\hat T} s t$ is a proof that the equality already holds in the GAT $\Gamma$.
 \begin{example}
 	The GAT of categories $\Cat$ has the following clauses:
 	\begin{itemize}[noitemsep]
