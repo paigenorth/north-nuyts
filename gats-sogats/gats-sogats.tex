@@ -498,9 +498,9 @@ Note that a resolution of an equality clause $\Gamma \sez e : \idtp{\hat T} s t$
 \subsection{Desugarable record types}
 We can unproblematically add the following type formers, with standard rules:
 \begin{itemize}[noitemsep]
-	\item A unit sort (hence a unit clause),
-	\item $\Sigma$-sorts of sorts (which can be desugared roughly by currying),
-	\item $\Sigma$-clauses of clauses (which can be desugared roughly by splitting their components in the context),
+	\item A unit sort (hence a unit clause). Unit arguments and committed unit clauses can be desugared by erasing them. Unit clause resolutions can be desugared by forgetting them.
+	\item $\Sigma$-sorts of sorts. Pair arguments and committed $\Sigma$-clauses can be desugared by currying. $\Sigma$-clause resolutions can be desugared by deriving both components.
+	\item $\Sigma$-clauses of clauses, desugared similarly.
 	\item Record-sorts of sorts and record-clauses of clauses (which can be desugared using unit and $\Sigma$).
 \end{itemize}
 
